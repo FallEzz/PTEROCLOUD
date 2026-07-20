@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FallZx Stores - Hosting Panel & Bot WhatsApp Otomatis</title>
+    
+    <!-- Fix Tailwind Error Timeout -->
+    <script>
+        window.tailwind = window.tailwind || {};
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',   
+                            100: '#dbeafe',  
+                            200: '#bfdbfe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',  // Biru utama FallZx
+                            600: '#2563eb',  
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        html, body {
+            scroll-behavior: smooth;
+            overflow-x: hidden !important;
+            max-width: 100%;
+            width: 100vw;
+            position: relative;
+        }
+        .hero-pattern {
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='#f3f4f6' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+        }
+        .slide-up {
+            animation: slideUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800 bg-white hero-pattern relative">
+
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="blob bg-primary-100 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="blob bg-blue-50 w-[30rem] h-[30rem] rounded-full top-1/4 right-0 translate-x-1/3"></div>
+    </div>
+
+    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="showLandingPage()">
+                    <img src="https://i.ibb.co/qMPnFCYk/file-jpg.jpg" alt="FallZx Logo" class="w-10 h-10 rounded-xl shadow-md object-cover">
+                    <span class="font-bold text-2xl tracking-tight text-gray-900">FallZx<span class="text-primary-500">Stores</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8" id="desktop-menu">
+                    <a href="#fitur" class="nav-link text-gray-600 hover:text-primary-500 font-medium transition-colors">Fitur</a>
+                    <a href="#keuntungan" class="nav-link text-gray-600 hover:text-primary-500 font-medium transition-colors">Keuntungan</a>
+                    <a href="#faq" class="nav-link text-gray-600 hover:text-primary-500 font-medium transition-colors">FAQ</a>
+                    <a href="#kontak" class="nav-link text-gray-600 hover:text-primary-500 font-medium transition-colors">Kontak</a>
+                    <button onclick="showAboutPage()" class="nav-link text-gray-600 hover:text-primary-500 font-medium transition-colors">Tentang Kami</button>
+                    
+                    <button id="nav-cart-desktop" onclick="toggleCart()" class="hidden relative text-gray-600 hover:text-primary-500 transition-colors p-2">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        <span id="cart-badge-desktop" class="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                    
+                    <button onclick="showProductPage()" class="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Pesan Sekarang</button>
+                </div>
+
+                <!-- Mobile menu button & Cart -->
+                <div class="md:hidden flex items-center gap-4">
+                    <button id="nav-cart-mobile" onclick="toggleCart()" class="hidden relative text-gray-600 hover:text-primary-500 transition-colors p-2">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        <span id="cart-badge-mobile" class="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none p-2">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-t border-gray-100 absolute w-full left-0 shadow-xl origin-top">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="#fitur" class="nav-link block px-3 py-3 text-base font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 rounded-md transition-colors">Fitur</a>
+                <a href="#keuntungan" class="nav-link block px-3 py-3 text-base font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 rounded-md transition-colors">Keuntungan</a>
+                <a href="#faq" class="nav-link block px-3 py-3 text-base font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 rounded-md transition-colors">FAQ</a>
+                <a href="#kontak" class="nav-link block px-3 py-3 text-base font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 rounded-md transition-colors">Kontak</a>
+                <button onclick="showAboutPage()" class="w-full text-left nav-link block px-3 py-3 text-base font-medium text-gray-700 hover:text-primary-500 hover:bg-gray-50 rounded-md transition-colors">Tentang Kami</button>
+                <button onclick="showProductPage()" class="w-full text-left px-3 py-3 mt-4 text-base font-medium text-center text-white bg-gray-900 hover:bg-gray-800 transition-colors rounded-lg shadow-md">Pesan Sekarang</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="landing-page-view" class="fade-in pt-20">
+        <!-- Hero Section -->
+        <section class="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
+                    
+                    <div class="lg:col-span-6 text-center lg:text-left slide-up">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 text-primary-600 font-medium text-sm mb-6 border border-primary-100">
+                            <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+                            </span>
+                            Sistem Otomatisasi 100% Aktif
+                        </div>
+                        
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6 tracking-tight">
+                            Semua Kebutuhan <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-blue-600">Hosting</span> & Bot WhatsApp Dalam Satu Tempat.
+                        </h1>
+                        
+                        <div class="mb-8">
+                            <p class="text-lg text-gray-600 mb-5 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                                Nikmati layanan hosting dan digital terbaik dengan harga yang bersahabat. Kami mengutamakan kualitas dan kepuasan kamu melalui:
+                            </p>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto lg:mx-0">
+                                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex gap-3 items-start group hover:border-primary-200 hover:shadow-md transition-all">
+                                    <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                        <span class="text-xl">🚀</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-sm">Proses Instan</h4>
+                                        <p class="text-xs text-gray-500 mt-1">Pembayaran masuk, layanan langsung aktif.</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex gap-3 items-start group hover:border-green-200 hover:shadow-md transition-all">
+                                    <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                        <span class="text-xl">🔓</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-sm">Script No Encrypt</h4>
+                                        <p class="text-xs text-gray-500 mt-1">Bebas custom Script Bot WA sesuka hati.</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex gap-3 items-start group hover:border-yellow-200 hover:shadow-md transition-all">
+                                    <div class="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                        <span class="text-xl">🛡️</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-sm">Garansi Layanan</h4>
+                                        <p class="text-xs text-gray-500 mt-1">Ketenangan pikiran dengan jaminan optimal.</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex gap-3 items-start group hover:border-purple-200 hover:shadow-md transition-all">
+                                    <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                        <span class="text-xl">🌐</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-sm">Sangat Lengkap</h4>
+                                        <p class="text-xs text-gray-500 mt-1">Panel Pterodactyl, VPS, hingga Domain murah.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-8">
+                            <button onclick="showProductPage()" class="inline-flex justify-center items-center bg-primary-500 hover:bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-primary-500/30 transform hover:-translate-y-1">
+                                Pesan Sekarang
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-6 mt-16 lg:mt-0 slide-up delay-200 relative group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-primary-500 to-blue-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                        <div class="relative rounded-2xl bg-white shadow-2xl overflow-hidden border border-gray-100 transform group-hover:-translate-y-2 transition-transform duration-500">
+                            <img src="https://i.ibb.co/BKcyqXkw/file-jpg.jpg" alt="FallZx Stores Banner" class="w-full h-auto object-cover" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="fitur" class="py-20 bg-gray-50 border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-sm font-bold text-primary-500 uppercase tracking-wider mb-2">Fitur Unggulan</h2>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Mengapa Memilih Sistem Kami?</h3>
+                    <p class="text-lg text-gray-600">Kami menyediakan infrastruktur lengkap untuk bisnis hosting game Anda. Fokus pada pemasaran, biarkan sistem kami mengurus sisanya.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+                        <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="zap" class="w-7 h-7 text-blue-500"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">Provisioning Instan</h4>
+                        <p class="text-gray-600 leading-relaxed">Begitu pembayaran terkonfirmasi, server Pterodactyl langsung terbuat otomatis dalam hitungan detik.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+                        <div class="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="credit-card" class="w-7 h-7 text-green-500"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">Payment Gateway</h4>
+                        <p class="text-gray-600 leading-relaxed">Mendukung berbagai metode pembayaran lokal (Qris, VA, E-Wallet) terintegrasi secara seamless.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+                        <div class="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="mail" class="w-7 h-7 text-purple-500"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">Notifikasi Otomatis</h4>
+                        <p class="text-gray-600 leading-relaxed">Kirim detail login, pengingat tagihan langsung ke WhatsApp pelanggan secara otomatis.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Keuntungan Section -->
+        <section id="keuntungan" class="py-24 bg-white relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Mengapa Kamu Membeli di Kami? <br> <span class="text-primary-500">Apa Keuntungannya?</span></h2>
+                    <p class="text-lg text-gray-600">Berikut adalah berbagai keuntungan dan jaminan yang akan Anda dapatkan jika menggunakan layanan kami dibandingkan yang lain.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
+                    <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center">
+                        <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-500">
+                            <i data-lucide="lock" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Server Private</h3>
+                        <p class="text-gray-500 text-sm">Server yang sepenuhnya private, dikhususkan untuk menjamin performa maksimal.</p>
+                    </div>
+                    <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center">
+                        <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-green-500">
+                            <i data-lucide="shield-check" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Tidak Dirusuh</h3>
+                        <p class="text-gray-500 text-sm">Keamanan berlapis dan lingkungan yang kondusif. Bebas dari gangguan.</p>
+                    </div>
+                    <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center">
+                        <div class="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-yellow-500">
+                            <i data-lucide="calendar-check" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Garansi On 20 Hari</h3>
+                        <p class="text-gray-500 text-sm">Ketenangan pikiran dengan jaminan uptime dan garansi penuh selama 20 hari.</p>
+                    </div>
+                    <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center">
+                        <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-red-500">
+                            <i data-lucide="award" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Mudah Claim Garansi</h3>
+                        <p class="text-gray-500 text-sm">Proses claim garansi yang sangat mudah, cepat respon, tanpa syarat berbelit.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-20 bg-gray-50 border-t border-gray-100">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-sm font-bold text-primary-500 uppercase tracking-wider mb-2">Bantuan</h2>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Pertanyaan yang Sering Diajukan</h3>
+                </div>
+                <div class="space-y-4">
+                    <details class="group bg-white p-6 rounded-2xl border border-gray-200 cursor-pointer shadow-sm">
+                        <summary class="flex justify-between items-center font-bold text-gray-900 text-lg list-none [&::-webkit-details-marker]:hidden">
+                            Bagaimana sistem pengiriman otomatis bekerja?
+                            <span class="transition group-open:rotate-180"><i data-lucide="chevron-down" class="w-5 h-5 text-gray-500"></i></span>
+                        </summary>
+                        <p class="text-gray-600 mt-4 leading-relaxed border-t pt-4 border-gray-100">Setelah pembayaran terkonfirmasi, sistem kami otomatis membuatkan server Anda di Pterodactyl panel dan langsung mengirimkan detail login via WhatsApp.</p>
+                    </details>
+                    <details class="group bg-white p-6 rounded-2xl border border-gray-200 cursor-pointer shadow-sm">
+                        <summary class="flex justify-between items-center font-bold text-gray-900 text-lg list-none [&::-webkit-details-marker]:hidden">
+                            Apakah bot WhatsApp selalu aktif 24 jam?
+                            <span class="transition group-open:rotate-180"><i data-lucide="chevron-down" class="w-5 h-5 text-gray-500"></i></span>
+                        </summary>
+                        <p class="text-gray-600 mt-4 leading-relaxed border-t pt-4 border-gray-100">Ya, sistem bot WhatsApp kami dihosting di server dengan uptime 99.9%, sehingga siap memproses pesanan dan membalas pelanggan Anda 24/7.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kontak Section -->
+        <section id="kontak" class="py-20 bg-white border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-sm font-bold text-primary-500 uppercase tracking-wider mb-2">Hubungi Kami</h2>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Punya Pertanyaan Lain?</h3>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+                    <div class="space-y-8">
+                        <div class="flex items-start gap-4">
+                            <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-500 shrink-0"><i data-lucide="phone" class="w-7 h-7"></i></div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-xl mb-1">WhatsApp Chat</h4>
+                                <a href="https://wa.me/6285813708397" target="_blank" class="text-primary-600 font-semibold text-lg hover:underline">0858-1370-8397</a>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 shrink-0"><i data-lucide="mail" class="w-7 h-7"></i></div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-xl mb-1">Email Support</h4>
+                                <a href="mailto:fallzxcoderid@gmail.com" class="text-blue-600 font-semibold text-lg hover:underline">fallzxcoderid@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
+                        <h4 class="text-2xl font-bold text-gray-900 mb-6">Kirim Pesan Langsung</h4>
+                        <form onsubmit="sendToWhatsApp(event)">
+                            <div class="mb-5">
+                                <label class="block text-gray-700 font-medium mb-2">Nama Lengkap</label>
+                                <input type="text" id="sender-name" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors" required>
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-gray-700 font-medium mb-2">Pesan Anda</label>
+                                <textarea id="sender-message" rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors" required></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-primary-500/30 flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-5 h-5"></i> Kirim via WhatsApp
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-20">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-primary-600 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-primary-500 opacity-50"></div>
+                    <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-primary-700 opacity-50"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Ingin Jasa Pembuatan Website?</h2>
+                        <p class="text-primary-100 text-lg mb-10 max-w-2xl mx-auto">Tingkatkan kredibilitas bisnis Anda dengan website profesional, modern, dan responsif.</p>
+                        <a href="https://wa.me/6285813708397" target="_blank" class="inline-block bg-white text-primary-600 font-bold px-8 py-4 rounded-full text-lg hover:bg-gray-50 transition-colors shadow-lg transform hover:-translate-y-1">
+                            Pesan Sekarang via WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TENTANG KAMI VIEW -->
+    <div id="about-page-view" class="hidden fade-in min-h-screen pt-28 pb-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <button onclick="showLandingPage()" class="inline-flex items-center gap-2 text-gray-500 hover:text-primary-600 mb-8 font-medium transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i> Kembali ke Beranda
+            </button>
+            
+            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-gray-100 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-primary-500 to-blue-600"></div>
+                
+                <div class="relative z-10 flex flex-col items-center mt-8">
+                    <div class="relative mb-6">
+                        <img src="https://i.ibb.co/qMPnFCYk/file-jpg.jpg" alt="FallZx Logo" class="w-32 h-32 rounded-2xl shadow-2xl object-cover border-4 border-white">
+                        <div class="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
+                            <div class="bg-blue-500 text-white rounded-full p-1.5 flex items-center justify-center">
+                                <i data-lucide="check" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-2">FallZx Stores</h2>
+                    <p class="text-primary-600 font-semibold mb-6 flex items-center gap-2">
+                        <i data-lucide="award" class="w-5 h-5"></i> Verified Service Provider
+                    </p>
+                    
+                    <div class="max-w-2xl mx-auto text-gray-600 leading-relaxed space-y-4 mb-8">
+                        <p>Selamat datang di <strong>FallZx Stores</strong>! Kami adalah penyedia layanan otomatisasi digital terpercaya yang berfokus pada efisiensi dan kualitas.</p>
+                        <p>Dengan pengalaman dalam mengelola infrastruktur server dan pengembangan bot WhatsApp, kami hadir untuk mempermudah bisnis Anda. Mulai dari layanan Panel Pterodactyl instan, pembuatan Script Bot WA yang responsif, hingga desain dan produk digital—semuanya kami sediakan dalam satu tempat.</p>
+                        <p>Kepuasan pelanggan adalah prioritas utama kami. Kami menjamin uptime tinggi, garansi layanan yang mudah di-klaim, serta dukungan teknis yang responsif.</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 w-full max-w-lg mb-8">
+                        <h4 class="font-bold text-gray-900 mb-4 text-left">Kenapa Memilih Kami?</h4>
+                        <ul class="space-y-3 text-sm text-gray-600 text-left">
+                            <li class="flex items-center gap-3"><i data-lucide="shield-check" class="w-5 h-5 text-green-500 shrink-0"></i> Sistem Otomatis 24 Jam</li>
+                            <li class="flex items-center gap-3"><i data-lucide="shield-check" class="w-5 h-5 text-green-500 shrink-0"></i> Garansi Uptime & Performa</li>
+                            <li class="flex items-center gap-3"><i data-lucide="shield-check" class="w-5 h-5 text-green-500 shrink-0"></i> Harga Jujur Tanpa Biaya Tersembunyi</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                        <i data-lucide="code" class="w-4 h-4"></i> Designed by <span class="text-primary-500 font-bold">FallZx Infinity</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT PAGE VIEW -->
+    <div id="product-page-view" class="hidden fade-in min-h-screen pt-28 pb-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <button onclick="showLandingPage()" class="inline-flex items-center gap-2 text-gray-500 hover:text-primary-600 mb-6 font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Kembali ke Beranda
+                </button>
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Katalog Produk FallZx</h2>
+                <p class="text-lg text-gray-600">Pilih layanan yang paling sesuai dengan kebutuhan bisnis hosting Anda.</p>
+            </div>
+
+            <!-- Tab Navigasi Kategori -->
+            <div class="flex justify-start xl:justify-center mb-12 overflow-x-auto pb-4 w-full" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="inline-flex bg-gray-200/50 p-1.5 rounded-2xl gap-2 min-w-max">
+                    <button id="tab-panel" onclick="switchTab('panel')" class="product-tab-btn bg-white text-gray-900 font-semibold px-5 py-2.5 rounded-xl shadow-sm whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="server" class="w-4 h-4"></i> Panel Pterodactyl</button>
+                    <button id="tab-script-wa" onclick="switchTab('script-wa')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="code-2" class="w-4 h-4"></i> Jasa Script Bot WA</button>
+                    <button id="tab-sewa" onclick="switchTab('sewa')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="bot" class="w-4 h-4"></i> Sewa Bot & Jadibot</button>
+                    <button id="tab-fitur" onclick="switchTab('fitur')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="wrench" class="w-4 h-4"></i> Jasa Pembuatan Fitur</button>
+                    <button id="tab-lily" onclick="switchTab('lily')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="sparkles" class="w-4 h-4"></i> Script Lily Gen 3</button>
+                    <button id="tab-rename" onclick="switchTab('rename')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="pen-tool" class="w-4 h-4"></i> Jasa Rename Script</button>
+                    <button id="tab-domain" onclick="switchTab('domain')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="globe" class="w-4 h-4"></i> Domain & Hosting</button>
+                    <button id="tab-design" onclick="switchTab('design')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="palette" class="w-4 h-4"></i> Creative Design</button>
+                    <button id="tab-digital" onclick="switchTab('digital')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="box" class="w-4 h-4"></i> Produk Digital</button>
+                    <button id="tab-karier" onclick="switchTab('karier')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="file-text" class="w-4 h-4"></i> Dokumen Karier</button>
+                    <button id="tab-joki" onclick="switchTab('joki')" class="product-tab-btn text-gray-600 hover:text-gray-900 font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 text-sm"><i data-lucide="book-open" class="w-4 h-4"></i> Joki Tugas Sekolah</button>
+                </div>
+            </div>
+
+            <!-- TAB: PANEL -->
+            <div id="content-panel" class="product-content grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="col-span-full text-center mb-4">
+                    <p class="text-gray-600 bg-gray-100 inline-block px-6 py-3 rounded-full font-medium text-sm md:text-base border border-gray-200">
+                        <span class="font-bold text-primary-600">Panel Pterodactyl</span> hosting bot/game dengan performa stabil dan harga terjangkau. <br class="md:hidden">Pilih Varian:
+                    </p>
+                </div>
+                <!-- 1GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 1GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 2.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 1 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 20%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 1GB RAM', 2000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 1GB RAM', 2000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 2GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 2GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 3.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 2 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 25%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 2GB RAM', 3000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 2GB RAM', 3000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 3GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 3GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 4.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 3 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 30%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 3GB RAM', 4000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 3GB RAM', 4000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 4GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col ring-1 ring-primary-500">
+                    <div class="absolute top-0 right-0 bg-primary-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl rounded-tr-3xl">Laris</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 4GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 5.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 4 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 35%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 4GB RAM', 5000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 4GB RAM', 5000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 5GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 5GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 6.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 5 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 40%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 5GB RAM', 6000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 5GB RAM', 6000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 6GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 6GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 7.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 6 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 45%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 6GB RAM', 7000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 6GB RAM', 7000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 7GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 7GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 8.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 7 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 50%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 7GB RAM', 8000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 7GB RAM', 8000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 8GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 8GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 9.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 8 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 55%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 8GB RAM', 9000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 8GB RAM', 9000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 9GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 9GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 10.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 9 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 60%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 9GB RAM', 10000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 9GB RAM', 10000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 11GB -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Paket 11GB RAM</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 11.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="memory-stick" class="w-4 h-4 text-primary-500 shrink-0"></i> 11 GB RAM</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="cpu" class="w-4 h-4 text-primary-500 shrink-0"></i> CPU 65%</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary-500 shrink-0"></i> Full Garansi</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel 11GB RAM', 11000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel 11GB RAM', 11000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Unlimited -->
+                <div class="bg-blue-50 rounded-3xl p-6 border border-blue-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-blue-900 mb-1">Paket Unlimited</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-blue-900">Rp 13.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-blue-700"><i data-lucide="infinity" class="w-4 h-4 text-blue-500 shrink-0"></i> Unlimited RAM</li>
+                        <li class="flex gap-2 text-blue-700"><i data-lucide="infinity" class="w-4 h-4 text-blue-500 shrink-0"></i> Unmetered CPU</li>
+                        <li class="flex gap-2 text-blue-700"><i data-lucide="zap" class="w-4 h-4 text-blue-500 shrink-0"></i> Performa Max</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Panel Unlimited RAM', 13000)" class="bg-blue-100 hover:bg-blue-200 text-blue-900 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Panel Unlimited RAM', 13000)" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Reseller Panel -->
+                <div class="bg-purple-50 rounded-3xl p-6 border border-purple-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                    <h3 class="text-lg font-bold text-purple-900 mb-1">Reseller Panel</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-purple-900">Rp 16.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-purple-700"><i data-lucide="users" class="w-4 h-4 text-purple-500 shrink-0"></i> Akses Jual Kembali</li>
+                        <li class="flex gap-2 text-purple-700"><i data-lucide="settings" class="w-4 h-4 text-purple-500 shrink-0"></i> Kelola User Sendiri</li>
+                        <li class="flex gap-2 text-purple-700"><i data-lucide="pie-chart" class="w-4 h-4 text-purple-500 shrink-0"></i> Alokasi Resource Besar</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Reseller Panel Pterodactyl', 16000)" class="bg-purple-100 hover:bg-purple-200 text-purple-900 p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Reseller Panel Pterodactyl', 16000)" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Admin Panel -->
+                <div class="bg-gray-900 rounded-3xl p-6 border border-gray-800 shadow-xl relative group flex flex-col overflow-hidden col-span-full md:col-span-1 lg:col-span-2">
+                    <div class="absolute -right-6 -top-6 bg-primary-500/20 w-24 h-24 rounded-full blur-xl"></div>
+                    <h3 class="text-lg font-bold text-white mb-1">Admin Panel Full Akses</h3>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-white">Rp 18.000</span></div>
+                    <ul class="space-y-3 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-300"><i data-lucide="shield-check" class="w-4 h-4 text-primary-400 shrink-0"></i> Akses Tertinggi (Root Admin)</li>
+                        <li class="flex gap-2 text-gray-300"><i data-lucide="sliders" class="w-4 h-4 text-primary-400 shrink-0"></i> Buat Node & Nest Sendiri</li>
+                        <li class="flex gap-2 text-gray-300"><i data-lucide="database" class="w-4 h-4 text-primary-400 shrink-0"></i> Kontrol Total Ekosistem</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto lg:max-w-xs">
+                        <button onclick="addToCart('Admin Panel Pterodactyl', 18000)" class="bg-gray-800 hover:bg-gray-700 text-white p-2.5 rounded-xl transition-colors" title="Tambah ke Keranjang"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Admin Panel Pterodactyl', 18000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SCRIPT WA -->
+            <div id="content-script-wa" class="product-content hidden grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Multi Device -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Bot Multi Device</h3>
+                    <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 45.000</span></div>
+                    <ul class="space-y-3 mb-8 text-sm flex-1">
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Support Multi Device</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Anti Delay Sistem</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Full Source Code</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Bot Multi Device', 45000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Bot Multi Device', 45000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-5 h-5"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Bot RPG -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Bot RPG (Game)</h3>
+                    <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 55.000</span></div>
+                    <ul class="space-y-3 mb-8 text-sm flex-1">
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Fitur Leveling & Ekonomi</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Petualangan & Inventory</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Full Database</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Bot RPG (Game)', 55000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Bot RPG (Game)', 55000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-5 h-5"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Jaga Group -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Bot Jaga Group & Push</h3>
+                    <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 35.000</span></div>
+                    <ul class="space-y-3 mb-8 text-sm flex-1">
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Auto Welcome/Leave</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Push Kontak Cepat</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Anti Link / Spam</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Bot Jaga Group & Pushkontak', 35000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Bot Jaga Group & Pushkontak', 35000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-5 h-5"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Convert Downloader -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Bot Convert & Downloader</h3>
+                    <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 40.000</span></div>
+                    <ul class="space-y-3 mb-8 text-sm flex-1">
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Tiktok/IG/YT Downloader</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Auto Image to Sticker</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> HD Image Convert</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Bot Convert & Downloader', 40000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Bot Convert & Downloader', 40000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-5 h-5"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Auto AI -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Bot Auto AI</h3>
+                    <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 50.000</span></div>
+                    <ul class="space-y-3 mb-8 text-sm flex-1">
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Integrasi ChatGPT / Gemini</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> AI Image Generator</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i> Respons Cerdas & Alami</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Bot Auto AI', 50000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Bot Auto AI', 50000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-5 h-5"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Payment Gateway -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden ring-2 ring-primary-500 flex flex-col">
+                    <div class="absolute top-0 right-0 bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-3xl">Paling Dicari</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Bot Auto Order PayGate</h3>
+                    <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 80.000</span></div>
+                    <ul class="space-y-3 mb-8 text-sm flex-1">
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-primary-500 shrink-0"></i> Auto Create Panel / Akun</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-primary-500 shrink-0"></i> Integrasi QRIS & E-Wallet</li>
+                        <li class="flex gap-3 text-gray-600"><i data-lucide="check" class="w-5 h-5 text-primary-500 shrink-0"></i> Sistem Saldo Member</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Bot Auto Order Payment Gateway', 80000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Bot Auto Order Payment Gateway', 80000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-5 h-5"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SEWA BOT -->
+            <div id="content-sewa" class="product-content hidden grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-full text-center mb-4">
+                    <p class="text-gray-600 bg-gray-100 inline-block px-6 py-4 rounded-3xl font-medium text-sm md:text-base border border-gray-200 max-w-4xl leading-relaxed text-left md:text-center">
+                        <span class="font-bold text-primary-600">Layanan Sewabot atau Jadibot WhatsApp:</span> Memungkinkan Anda memiliki bot siap pakai tanpa repot menjalankan server sendiri. Sambungkan akun WhatsApp, bot aktif 24 jam.<br><br>
+                    </p>
+                </div>
+                <!-- 2 Minggu -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col group">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><i data-lucide="calendar" class="w-6 h-6"></i></div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-1 flex-1">Paket 2 Minggu / 14 Day</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-3xl font-extrabold text-gray-900">Rp 10.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Sewa/Jadibot 14 Hari', 10000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Sewa/Jadibot 14 Hari', 10000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 1 Bulan -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col group ring-1 ring-primary-500">
+                    <div class="absolute top-0 right-0 bg-primary-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl rounded-tr-3xl">Laris</div>
+                    <div class="w-12 h-12 bg-primary-50 text-primary-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><i data-lucide="calendar-check" class="w-6 h-6"></i></div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-1 flex-1">Paket 1 Bulan / 30 Day</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-3xl font-extrabold text-gray-900">Rp 20.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Sewa/Jadibot 30 Hari', 20000)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Sewa/Jadibot 30 Hari', 20000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Permanen -->
+                <div class="bg-gray-900 rounded-3xl p-6 border border-gray-800 shadow-xl relative flex flex-col group overflow-hidden">
+                    <div class="absolute -right-6 -top-6 bg-primary-500/20 w-24 h-24 rounded-full blur-xl"></div>
+                    <div class="w-12 h-12 bg-gray-800 text-yellow-400 rounded-xl flex items-center justify-center mb-4 z-10 group-hover:scale-110 transition-transform"><i data-lucide="infinity" class="w-6 h-6"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-1 flex-1 z-10">Paket Permanen</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2 z-10"><span class="text-3xl font-extrabold text-white">Rp 30.000</span></div>
+                    <div class="flex gap-2 mt-auto z-10">
+                        <button onclick="addToCart('Sewa/Jadibot Permanen', 30000)" class="bg-gray-800 hover:bg-gray-700 text-white py-3 px-4 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Sewa/Jadibot Permanen', 30000)" class="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-gray-900 font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: FITUR -->
+            <div id="content-fitur" class="product-content hidden grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Variant 1 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-primary-50 text-primary-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="wrench" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Add & Fix Fitur Bot</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 5.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Add & Fix Fitur WhatsApp Bot', 5000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Add & Fix Fitur WhatsApp Bot', 5000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Variant 2 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-pink-50 text-pink-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="heart" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Auto React Status</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 15.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Add Fitur Auto React Status', 15000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Add Fitur Auto React Status', 15000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Variant 3 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="shield" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Fitur Security IP</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 25.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Add Fitur Security IP', 25000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Add Fitur Security IP', 25000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Variant 4 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="key" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Security User + Pass</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 15.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Add Fitur Security Username + Password', 15000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Add Fitur Security Username + Password', 15000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Variant 5 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-green-50 text-green-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="users" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Autojoin Saluran WA</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 10.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Add Fitur Autojoin Saluran WhatsApp', 10000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Add Fitur Autojoin Saluran WhatsApp', 10000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Variant 6 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col ring-1 ring-primary-500">
+                    <div class="absolute top-0 right-0 bg-primary-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl rounded-tr-3xl">Laris</div>
+                    <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="video" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Auto Show JKT48</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 55.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Fitur Auto Show JKT48 (Showroom + IDN)', 55000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Fitur Auto Show JKT48 (Showroom + IDN)', 55000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: LILY GEN 3 -->
+            <div id="content-lily" class="product-content hidden grid md:grid-cols-3 gap-6">
+                <!-- No Update -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="sparkles" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Lily Gen 3 (NO UPDATE)</h3>
+                    <ul class="space-y-2 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-purple-500 shrink-0 mt-0.5"></i> Total Features 600+</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-purple-500 shrink-0 mt-0.5"></i> Auto React SW</li>
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-purple-500 shrink-0 mt-0.5"></i> Auto Show JKT48</li>
+                    </ul>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 35.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Script Lily Gen 3 (No Update)', 35000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Script Lily Gen 3 (No Update)', 35000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 1x Update -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col ring-1 ring-purple-500">
+                    <div class="absolute top-0 right-0 bg-purple-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl rounded-tr-3xl">Paling Worth It</div>
+                    <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center mb-4"><i data-lucide="rocket" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Lily Gen 3 (FREE 1x UPDATE)</h3>
+                    <ul class="space-y-2 mb-6 text-sm flex-1">
+                        <li class="flex gap-2 text-gray-600"><i data-lucide="check" class="w-4 h-4 text-purple-500 shrink-0 mt-0.5"></i> Total Features 600+</li>
+                        <li class="flex gap-2 text-purple-600 font-medium"><i data-lucide="refresh-cw" class="w-4 h-4 text-purple-500 shrink-0 mt-0.5"></i> Gratis 1x Update System</li>
+                    </ul>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-gray-900">Rp 40.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Script Lily Gen 3 (1x Update)', 40000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Script Lily Gen 3 (1x Update)', 40000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 2x Update -->
+                <div class="bg-gray-900 rounded-3xl p-6 border border-gray-800 shadow-xl relative flex flex-col">
+                    <div class="w-12 h-12 bg-gray-800 text-pink-400 rounded-xl flex items-center justify-center mb-4"><i data-lucide="crown" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-white mb-2">Lily Gen 3 (FREE 2x UPDATE)</h3>
+                    <ul class="space-y-2 mb-6 text-sm flex-1 text-gray-300">
+                        <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400 shrink-0 mt-0.5"></i> Total Features 600+</li>
+                        <li class="flex gap-2 text-pink-300 font-medium"><i data-lucide="refresh-cw" class="w-4 h-4 text-pink-400 shrink-0 mt-0.5"></i> Gratis 2x Update System</li>
+                    </ul>
+                    <div class="flex items-baseline gap-1 mb-5"><span class="text-2xl font-extrabold text-white">Rp 50.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Script Lily Gen 3 (2x Update)', 50000)" class="bg-gray-800 hover:bg-gray-700 text-white p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Script Lily Gen 3 (2x Update)', 50000)" class="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: RENAME SCRIPT -->
+            <div id="content-rename" class="product-content hidden grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 30% -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Rename 30%</h3>
+                    <div class="flex items-baseline gap-1 mb-4"><span class="text-2xl font-extrabold text-gray-900">Rp 7.000</span></div>
+                    <ul class="space-y-2 mb-6 text-xs text-gray-600 flex-1">
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5"></i> Ganti Nama Bot & Owner</li>
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5"></i> Ganti Footer / Watermark</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Jasa Rename Script 30%', 7000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Jasa Rename Script 30%', 7000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 60% -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Rename 60%</h3>
+                    <div class="flex items-baseline gap-1 mb-4"><span class="text-2xl font-extrabold text-gray-900">Rp 12.000</span></div>
+                    <ul class="space-y-2 mb-6 text-xs text-gray-600 flex-1">
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5"></i> Nama Bot, Owner, Info</li>
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5"></i> Foto Menu & Watermark</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Jasa Rename Script 60%', 12000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Jasa Rename Script 60%', 12000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 80% -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col ring-1 ring-orange-500">
+                    <div class="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl rounded-tr-3xl">Paling Pas</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Rename 80%</h3>
+                    <div class="flex items-baseline gap-1 mb-4"><span class="text-2xl font-extrabold text-gray-900">Rp 15.000</span></div>
+                    <ul class="space-y-2 mb-6 text-xs text-gray-600 flex-1">
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5"></i> Nama Bot, Owner, Info</li>
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5"></i> Watermark & Foto Menu</li>
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5"></i> Command, Variabel, String</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Jasa Rename Script 80%', 15000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Jasa Rename Script 80%', 15000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- 100% -->
+                <div class="bg-gray-900 rounded-3xl p-6 border border-gray-800 shadow-xl relative flex flex-col">
+                    <h3 class="text-lg font-bold text-white mb-1">Rename 100% Full</h3>
+                    <div class="flex items-baseline gap-1 mb-4"><span class="text-2xl font-extrabold text-white">Rp 20.000</span></div>
+                    <ul class="space-y-2 mb-6 text-xs text-gray-300 flex-1">
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-400 shrink-0 mt-0.5"></i> Rombak Total Identitas</li>
+                        <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-orange-400 shrink-0 mt-0.5"></i> Struktur Menu & Command</li>
+                        <li class="flex gap-2 font-bold text-orange-400"><i data-lucide="award" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i> Hak Milik Custom Script</li>
+                    </ul>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Jasa Rename Script 100% Full', 20000)" class="bg-gray-800 hover:bg-gray-700 text-white p-2.5 rounded-xl transition-colors"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Jasa Rename Script 100% Full', 20000)" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: DOMAIN & HOSTING -->
+            <div id="content-domain" class="product-content hidden grid md:grid-cols-3 gap-6">
+                <!-- Domain 1 -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all text-center flex flex-col">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="globe" class="w-8 h-8"></i></div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 flex-1">Domain (.my.id / biz.id / .web.id)</h3>
+                    <div class="flex items-baseline justify-center gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 10.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Domain (.my.id / biz.id / .web.id)', 10000)" class="bg-gray-100 hover:bg-gray-200 p-3 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Domain (.my.id / biz.id / .web.id)', 10000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Domain 2 -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all text-center ring-2 ring-primary-500 flex flex-col">
+                    <div class="w-16 h-16 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="server" class="w-8 h-8"></i></div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 flex-1">Domain .xyz 1 Tahun</h3>
+                    <div class="flex items-baseline justify-center gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 30.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Domain .xyz 1 Tahun', 30000)" class="bg-gray-100 hover:bg-gray-200 p-3 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Domain .xyz 1 Tahun', 30000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Domain 3 -->
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all text-center flex flex-col">
+                    <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="globe" class="w-8 h-8"></i></div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 flex-1">Domain .xyz + Hosting Dedicate 1 Thn</h3>
+                    <div class="flex items-baseline justify-center gap-1 mb-6"><span class="text-3xl font-extrabold text-gray-900">Rp 270.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Domain .xyz + Hosting Dedicate 1 Thn', 270000)" class="bg-gray-100 hover:bg-gray-200 p-3 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Domain .xyz + Hosting Dedicate 1 Thn', 270000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-xl transition-colors flex justify-center items-center gap-2"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: DESIGN -->
+            <div id="content-design" class="product-content hidden grid md:grid-cols-3 gap-6">
+                <!-- Logo -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="hexagon" class="w-10 h-10 text-pink-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Desain Logo Personal</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 45.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Desain Logo', 45000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Desain Logo', 45000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Banner -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="monitor" class="w-10 h-10 text-pink-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Desain Banner</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 35.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Desain Banner', 35000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Desain Banner', 35000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Poster -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="image" class="w-10 h-10 text-pink-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Desain Poster</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 40.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Desain Poster', 40000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Desain Poster', 40000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- UI/UX -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="layout-template" class="w-10 h-10 text-pink-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">UI/UX Design</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 150.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('UI/UX Design', 150000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('UI/UX Design', 150000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Kartu Nama -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="contact" class="w-10 h-10 text-pink-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Desain Kartu Nama</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 25.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Desain Kartu Nama', 25000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Desain Kartu Nama', 25000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: DIGITAL -->
+            <div id="content-digital" class="product-content hidden grid md:grid-cols-3 gap-6">
+                <!-- E-Book -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="book" class="w-10 h-10 text-blue-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">E-Book Digital</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 30.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('E-Book Digital', 30000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('E-Book Digital', 30000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Software -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="cpu" class="w-10 h-10 text-blue-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Software & Tools</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 50.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Software & Tools', 50000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Software & Tools', 50000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Lisensi -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="key" class="w-10 h-10 text-blue-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Lisensi & Key</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 45.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Lisensi & Key', 45000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Lisensi & Key', 45000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Template -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="copy" class="w-10 h-10 text-blue-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Template Digital</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 35.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Template Digital', 35000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Template Digital', 35000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Akun Premium -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="crown" class="w-10 h-10 text-blue-500 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Akun Premium</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 20.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Akun Premium', 20000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Akun Premium', 20000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: KARIER -->
+            <div id="content-karier" class="product-content hidden grid md:grid-cols-3 gap-6">
+                <!-- CV -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="file-text" class="w-10 h-10 text-green-600 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Pembuatan CV</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 35.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Pembuatan CV', 35000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Pembuatan CV', 35000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Portfolio -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="briefcase" class="w-10 h-10 text-green-600 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Pembuatan Portfolio</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 50.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Pembuatan Portfolio', 50000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Pembuatan Portfolio', 50000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Resume -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center flex flex-col">
+                    <i data-lucide="scroll-text" class="w-10 h-10 text-green-600 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Pembuatan Resume</h3>
+                    <div class="text-xl font-extrabold text-gray-900 mb-4 flex-1">Rp 30.000</div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Pembuatan Resume', 30000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Pembuatan Resume', 30000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: JOKI TUGAS -->
+            <div id="content-joki" class="product-content hidden grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Bab 1-3 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="file-text" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Laporan Bab 1–3 (Dasar)</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 120.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Laporan Bab 1–3 (Dasar)', 120000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Laporan Bab 1–3 (Dasar)', 120000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Bab 1-5 -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col ring-1 ring-yellow-500">
+                    <div class="absolute top-0 right-0 bg-yellow-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl rounded-tr-3xl">Lengkap</div>
+                    <div class="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="book-check" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Laporan Full Bab 1–5</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 215.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Laporan Full Bab 1–5', 215000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Laporan Full Bab 1–5', 215000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+                <!-- Makalah -->
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative flex flex-col">
+                    <div class="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="book-open" class="w-6 h-6"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 flex-1">Makalah Lengkap (11-20 hal)</h3>
+                    <div class="flex items-baseline gap-1 mb-5 mt-2"><span class="text-2xl font-extrabold text-gray-900">Rp 257.000</span></div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="addToCart('Makalah Lengkap (11-20 hal)', 257000)" class="bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl transition-colors text-gray-800"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                        <button onclick="buyNow('Makalah Lengkap (11-20 hal)', 257000)" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex justify-center items-center gap-2 text-sm"><i data-lucide="credit-card" class="w-4 h-4"></i> Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <img src="https://i.ibb.co/qMPnFCYk/file-jpg.jpg" alt="FallZx Logo" class="w-8 h-8 rounded-lg shadow-sm object-cover">
+                        <span class="font-bold text-xl tracking-tight text-gray-900">FallZx<span class="text-primary-500">Stores</span></span>
+                    </div>
+                    <p class="text-gray-500 leading-relaxed mb-6 max-w-sm">
+                        Solusi terdepan untuk otomatisasi penjualan server game berbasis Pterodactyl Panel. Mudah, Cepat, dan Aman.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Produk</h4>
+                    <ul class="space-y-3">
+                        <li><a onclick="showProductPage(); switchTab('panel');" class="cursor-pointer text-gray-500 hover:text-primary-500 transition-colors">Panel Pterodactyl</a></li>
+                        <li><a onclick="showProductPage(); switchTab('script-wa');" class="cursor-pointer text-gray-500 hover:text-primary-500 transition-colors">Script Bot WhatsApp</a></li>
+                        <li><a onclick="showProductPage(); switchTab('domain');" class="cursor-pointer text-gray-500 hover:text-primary-500 transition-colors">Domain & Hosting</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Hubungi Kami</h4>
+                    <ul class="space-y-3">
+                        <li><a href="https://wa.me/6285813708397" target="_blank" class="text-gray-500 hover:text-primary-500 transition-colors">WhatsApp</a></li>
+                        <li><a href="mailto:fallzxcoderid@gmail.com" class="text-gray-500 hover:text-primary-500 transition-colors">Email</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-sm text-center md:text-left">
+                    &copy; 2026 FallZx Stores. All rights reserved.
+                </p>
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                    Dibuat oleh FallZx Infinity
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR & OVERLAY -->
+    <div id="cart-overlay" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300" onclick="toggleCart()"></div>
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
+            <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <i data-lucide="shopping-cart" class="w-6 h-6 text-primary-500"></i> Keranjang Saya
+            </h3>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-red-500 bg-gray-50 rounded-full p-2 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50"></div>
+        
+        <div class="p-6 border-t border-gray-100 bg-white">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-gray-500 font-medium">Total Harga</span>
+                <span id="cart-total" class="text-2xl font-extrabold text-gray-900">Rp 0</span>
+            </div>
+            <button onclick="openPaymentModal()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                <i data-lucide="credit-card" class="w-5 h-5"></i> Lanjut ke Pembayaran
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-24 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl z-[80] transform translate-x-[150%] transition-transform duration-300 flex items-center gap-3 border border-gray-800">
+        <div id="toast-content" class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <i data-lucide="check" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm">Berhasil!</h4>
+                <p class="text-xs text-gray-400">Ditambahkan ke keranjang.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div id="payment-modal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[90] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center px-4" onclick="closePaymentModal(event)">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md transform scale-95 opacity-0 transition-all duration-300 overflow-hidden flex flex-col max-h-[90vh]" id="payment-modal-content">
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-900" id="modal-title">Pilih Pembayaran</h3>
+                <button onclick="closePaymentModal()" class="text-gray-400 hover:text-red-500 bg-white rounded-full p-2 transition-colors shadow-sm">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <!-- Step 1: Pilihan Metode, Voucher & Username -->
+            <div id="payment-step-1" class="p-6 overflow-y-auto space-y-6">
+                
+                <!-- Form Username Khusus Panel -->
+                <div id="panel-username-container" class="hidden bg-primary-50 p-4 rounded-xl border border-primary-100">
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Request Username Panel <span class="text-red-500">*</span></label>
+                    <input type="text" id="panel-username" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none text-sm transition-colors" placeholder="Masukkan username yang diinginkan...">
+                    <p id="panel-username-error" class="text-xs text-red-500 mt-1.5 font-medium hidden"><i data-lucide="alert-circle" class="w-3 h-3 inline"></i> Username wajib diisi untuk Panel!</p>
+                </div>
+
+                <!-- Voucher Input -->
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <label class="block text-xs font-bold text-primary-600 uppercase tracking-wider mb-2">Punya Kode Voucher?</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="voucher-code" class="flex-1 px-4 py-2.5 rounded-lg border border-blue-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none text-sm uppercase transition-colors" placeholder="Contoh: FALLZX10">
+                        <button onclick="applyVoucher()" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">Gunakan</button>
+                    </div>
+                    <p id="voucher-message" class="hidden"></p>
+                </div>
+
+                <!-- E-Wallet & QRIS -->
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">E-Wallet & QRIS</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectPayment('QRIS')" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-xl hover:border-primary-500 hover:bg-primary-50 transition-colors group">
+                            <i data-lucide="qr-code" class="w-8 h-8 text-gray-700 group-hover:text-primary-500 mb-2"></i>
+                            <span class="font-bold text-gray-900 text-sm">QRIS</span>
+                        </button>
+                        <button onclick="selectPayment('DANA')" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-colors group">
+                            <i data-lucide="smartphone" class="w-8 h-8 text-blue-500 mb-2"></i>
+                            <span class="font-bold text-gray-900 text-sm">DANA</span>
+                        </button>
+                        <button onclick="selectPayment('GoPay')" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-colors group">
+                            <i data-lucide="wallet" class="w-8 h-8 text-green-500 mb-2"></i>
+                            <span class="font-bold text-gray-900 text-sm">GoPay</span>
+                        </button>
+                        <button onclick="selectPayment('OVO')" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-colors group">
+                            <i data-lucide="circle-dollar-sign" class="w-8 h-8 text-purple-500 mb-2"></i>
+                            <span class="font-bold text-gray-900 text-sm">OVO</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Transfer Bank -->
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Transfer Bank</h4>
+                    <div class="space-y-3">
+                        <button onclick="selectPayment('SeaBank')" class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-colors group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                                    <i data-lucide="landmark" class="w-5 h-5"></i>
+                                </div>
+                                <span class="font-bold text-gray-900">SeaBank</span>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-orange-500"></i>
+                        </button>
+                        <button onclick="selectPayment('Bank Mandiri')" class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-blue-700 hover:bg-blue-50 transition-colors group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-700 group-hover:bg-blue-700 group-hover:text-white transition-colors">
+                                    <i data-lucide="landmark" class="w-5 h-5"></i>
+                                </div>
+                                <span class="font-bold text-gray-900">Bank Mandiri</span>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-blue-700"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Detail Instruksi Pembayaran -->
+            <div id="payment-step-2" class="hidden p-6 overflow-y-auto flex flex-col items-center text-center">
+                <button onclick="backToPaymentSelection()" class="self-start flex items-center gap-2 text-gray-500 hover:text-primary-500 mb-4 text-sm font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+                </button>
+                
+                <h4 class="text-lg font-bold text-gray-900 mb-1">Transfer ke <span id="detail-method-name" class="text-primary-500">DANA</span></h4>
+                <p class="text-gray-500 text-sm mb-6">Silakan transfer sesuai nominal untuk memproses pesanan.</p>
+                
+                <div id="qris-container" class="hidden w-full mb-6 flex flex-col items-center">
+                    <img src="https://c.top4top.io/p_3850z6di00.jpg" alt="QRIS FallZx Stores" class="w-full max-w-sm h-auto object-contain rounded-xl shadow-sm border border-gray-200 bg-white p-1">
+                    <p class="text-xs text-gray-500 mt-3 font-medium text-center">Scan foto QRIS di atas menggunakan aplikasi E-Wallet / M-Banking Anda.</p>
+                </div>
+                
+                <div id="account-container" class="w-full bg-gray-50 rounded-2xl p-4 border border-gray-200 mb-6 text-left">
+                    <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nomor / Rekening</div>
+                    <div class="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm mb-4">
+                        <span id="detail-account-number" class="font-mono text-lg font-bold text-gray-900 tracking-wider">085813708397</span>
+                        <button onclick="copyToClipboard('detail-account-number')" class="text-gray-400 hover:text-primary-500 transition-colors" title="Salin Nomor">
+                            <i data-lucide="copy" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Atas Nama (A/N)</div>
+                    <div id="detail-account-name" class="font-bold text-gray-900 text-lg">Naufal Miqdad Fawwaz</div>
+                </div>
+
+                <div class="w-full flex flex-col gap-2 py-4 border-t border-b border-gray-100 mb-6">
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span>Subtotal</span>
+                        <span id="detail-subtotal-amount">Rp 0</span>
+                    </div>
+                    <div id="detail-discount-row" class="flex justify-between items-center text-sm text-green-500 hidden">
+                        <span>Diskon Voucher</span>
+                        <span id="detail-discount-amount">- Rp 0</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-dashed border-gray-200 mt-1">
+                        <span class="text-gray-900 font-bold">Total Tagihan</span>
+                        <span id="detail-total-amount" class="text-2xl font-extrabold text-gray-900">Rp 0</span>
+                    </div>
+                </div>
+
+                <button onclick="confirmCheckoutWA()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                    <i data-lucide="message-square" class="w-5 h-5"></i> Konfirmasi via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI CHATBOT -->
+    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div id="ai-chat-window" class="hidden bg-white w-80 sm:w-96 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden mb-4 transition-all duration-300 origin-bottom-right">
+            <div class="bg-primary-500 text-white px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="bot" class="w-5 h-5"></i>
+                    <div>
+                        <h4 class="font-bold text-sm leading-tight">FallZx Bot</h4>
+                        <span class="text-[10px] text-primary-100 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-300"></span> Online
+                        </span>
+                    </div>
+                </div>
+                <button id="close-chat" class="text-white hover:text-gray-200 focus:outline-none transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="chat-messages" class="h-80 p-4 overflow-y-auto flex flex-col gap-3 bg-gray-50 scroll-smooth">
+                <div class="self-start bg-white border border-gray-200 text-gray-800 px-4 py-2.5 rounded-2xl rounded-tl-none max-w-[85%] text-sm shadow-sm">
+                    Halo! Saya FallZx Bot 🤖.<br>Ada yang bisa saya bantu?
+                </div>
+            </div>
+            <div class="p-3 bg-white border-t border-gray-100 flex gap-2 items-center">
+                <input type="text" id="chat-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500 transition-all" placeholder="Tanya sesuatu di sini...">
+                <button id="send-chat" class="bg-primary-500 hover:bg-primary-600 text-white p-2.5 rounded-xl transition-colors shadow-md flex shrink-0">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+        <button id="chat-toggle-btn" class="w-14 h-14 bg-primary-500 hover:bg-primary-600 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105">
+            <i data-lucide="message-square" class="w-7 h-7"></i>
+        </button>
+    </div>
+
+<script>
+    lucide.createIcons();
+
+    const landingView = document.getElementById('landing-page-view');
+    const productView = document.getElementById('product-page-view');
+    const aboutView = document.getElementById('about-page-view');
+    
+    // NAVIGASI
+    function hideAllPages() {
+        landingView.classList.add('hidden');
+        productView.classList.add('hidden');
+        aboutView.classList.add('hidden');
+    }
+    function showProductPage() {
+        hideAllPages();
+        productView.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('mobile-menu').classList.add('hidden');
+        document.getElementById('nav-cart-desktop').classList.remove('hidden');
+        document.getElementById('nav-cart-mobile').classList.remove('hidden');
+    }
+    function showLandingPage() {
+        hideAllPages();
+        landingView.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('nav-cart-desktop').classList.add('hidden');
+        document.getElementById('nav-cart-mobile').classList.add('hidden');
+    }
+    function showAboutPage() {
+        hideAllPages();
+        aboutView.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('mobile-menu').classList.add('hidden');
+        document.getElementById('nav-cart-desktop').classList.add('hidden');
+        document.getElementById('nav-cart-mobile').classList.add('hidden');
+    }
+
+    // TABS
+    function switchTab(tabName) {
+        document.querySelectorAll('.product-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.product-tab-btn').forEach(el => {
+            el.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            el.classList.add('text-gray-600', 'hover:text-gray-900');
+        });
+        document.getElementById('content-' + tabName).classList.remove('hidden');
+        const activeBtn = document.getElementById('tab-' + tabName);
+        activeBtn.classList.remove('text-gray-600', 'hover:text-gray-900');
+        activeBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+    }
+
+    // KERANJANG & BELI SEKARANG
+    let cart = [];
+    
+    function formatRupiah(number) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+    }
+    function toggleCart() {
+        const sidebar = document.getElementById('cart-sidebar');
+        const overlay = document.getElementById('cart-overlay');
+        if (sidebar.classList.contains('translate-x-full')) {
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            sidebar.classList.remove('translate-x-full');
+            updateCartUI();
+        } else {
+            overlay.classList.add('opacity-0');
+            sidebar.classList.add('translate-x-full');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    }
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.remove('translate-x-[150%]');
+        setTimeout(() => toast.classList.add('translate-x-[150%]'), 3000);
+    }
+    
+    function addToCart(namaProduk, harga) {
+        const existingItem = cart.find(item => item.nama === namaProduk);
+        if (existingItem) existingItem.qty += 1;
+        else cart.push({ nama: namaProduk, harga: harga, qty: 1 });
+        updateCartBadge();
+        showToast();
+    }
+
+    // Fungsi Langsung Beli (Bypass)
+    function buyNow(namaProduk, harga) {
+        const existingItem = cart.find(item => item.nama === namaProduk);
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            cart.push({ nama: namaProduk, harga: harga, qty: 1 });
+        }
+        updateCartBadge();
+        updateCartUI();
+        openPaymentModal();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartUI();
+        updateCartBadge();
+    }
+    function changeQty(index, delta) {
+        cart[index].qty += delta;
+        if (cart[index].qty <= 0) removeFromCart(index);
+        else { updateCartUI(); updateCartBadge(); }
+    }
+    function updateCartBadge() {
+        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+        const badges = [document.getElementById('cart-badge-desktop'), document.getElementById('cart-badge-mobile')];
+        badges.forEach(badge => {
+            if (badge) {
+                badge.innerText = totalItems;
+                if (totalItems > 0) badge.classList.remove('hidden');
+                else badge.classList.add('hidden');
+            }
+        });
+    }
+    function updateCartUI() {
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotal = document.getElementById('cart-total');
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = `
+                <div class="text-center text-gray-500 mt-20">
+                    <i data-lucide="shopping-bag" class="w-16 h-16 mx-auto mb-4 text-gray-300"></i>
+                    <p>Keranjang kosong.</p>
+                </div>`;
+            cartTotal.innerText = 'Rp 0';
+            lucide.createIcons();
+            return;
+        }
+        cartItemsContainer.innerHTML = '';
+        let total = 0;
+        cart.forEach((item, index) => {
+            total += item.harga * item.qty;
+            const itemEl = document.createElement('div');
+            itemEl.className = 'flex justify-between items-center p-4 bg-white border border-gray-200 rounded-2xl shadow-sm';
+            itemEl.innerHTML = `
+                <div class="flex-1">
+                    <h4 class="font-bold text-gray-900 text-sm mb-1">${item.nama}</h4>
+                    <div class="text-primary-600 font-semibold text-sm">${formatRupiah(item.harga)}</div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                        <button onclick="changeQty(${index}, -1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-200">-</button>
+                        <span class="w-8 text-center text-sm font-bold">${item.qty}</span>
+                        <button onclick="changeQty(${index}, 1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-200">+</button>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-600 p-2 bg-red-50 rounded-lg">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+            cartItemsContainer.appendChild(itemEl);
+        });
+        cartTotal.innerText = formatRupiah(total);
+        lucide.createIcons();
+    }
+
+    // PEMBAYARAN & VOUCHER
+    let appliedVoucher = null;
+    let discountTotal = 0;
+    const validVouchers = {
+        'FALLZX10': { type: 'percent', value: 10 },
+        'DISKON5K': { type: 'fixed', value: 5000 },
+    };
+
+    function applyVoucher() {
+        const input = document.getElementById('voucher-code');
+        const msgEl = document.getElementById('voucher-message');
+        const code = input.value.trim().toUpperCase();
+        if (!code) return;
+        if (validVouchers[code]) {
+            appliedVoucher = code;
+            msgEl.textContent = `Voucher berhasil digunakan!`;
+            msgEl.className = 'text-xs font-medium mt-2 text-green-600 block';
+            input.disabled = true;
+        } else {
+            appliedVoucher = null;
+            msgEl.textContent = `Kode voucher tidak valid.`;
+            msgEl.className = 'text-xs font-medium mt-2 text-red-500 block';
+        }
+    }
+
+    function openPaymentModal() {
+        if (cart.length === 0) return;
+        const hasPanel = cart.some(item => item.nama.toLowerCase().includes('panel'));
+        const usernameContainer = document.getElementById('panel-username-container');
+        if (hasPanel) usernameContainer.classList.remove('hidden');
+        else usernameContainer.classList.add('hidden');
+        
+        const modal = document.getElementById('payment-modal');
+        const content = document.getElementById('payment-modal-content');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95', 'opacity-0');
+    }
+
+    function closePaymentModal(event) {
+        if (event && event.target.id !== 'payment-modal') return;
+        const modal = document.getElementById('payment-modal');
+        const content = document.getElementById('payment-modal-content');
+        modal.classList.add('opacity-0');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            setTimeout(backToPaymentSelection, 100);
+            appliedVoucher = null; discountTotal = 0;
+            const vCode = document.getElementById('voucher-code');
+            const vMsg = document.getElementById('voucher-message');
+            if(vCode) { vCode.value = ''; vCode.disabled = false; vMsg.classList.add('hidden'); }
+            document.getElementById('panel-username').value = '';
+        }, 300);
+    }
+
+    const paymentDetails = {
+        'DANA': { type: 'ewallet', no: '085813708397', an: 'Naufal Miqdad Fawwaz' },
+        'GoPay': { type: 'ewallet', no: '085813708397', an: 'N****l C***y' },
+        'OVO': { type: 'ewallet', no: '085813708397', an: 'Naufal' },
+        'QRIS': { type: 'qris' },
+        'SeaBank': { type: 'bank', no: '901579014313', an: 'NAUFAL MIQDAD FAWWAZ' },
+        'Bank Mandiri': { type: 'bank', no: '1730021708038', an: 'NAUFAL MIQDAD FAWWAZ' }
+    };
+
+    let currentPaymentMethod = '';
+
+    function selectPayment(metodePembayaran) {
+        const hasPanel = cart.some(item => item.nama.toLowerCase().includes('panel'));
+        if (hasPanel) {
+            const usernameInput = document.getElementById('panel-username');
+            const errorText = document.getElementById('panel-username-error');
+            if (usernameInput.value.trim() === '') {
+                errorText.classList.remove('hidden');
+                usernameInput.classList.add('border-red-500', 'bg-red-50');
+                usernameInput.focus();
+                return;
+            } else {
+                errorText.classList.add('hidden');
+                usernameInput.classList.remove('border-red-500', 'bg-red-50');
+            }
+        }
+        currentPaymentMethod = metodePembayaran;
+        document.getElementById('payment-step-1').classList.add('hidden');
+        document.getElementById('payment-step-2').classList.remove('hidden');
+        document.getElementById('modal-title').innerText = 'Instruksi Pembayaran';
+        document.getElementById('detail-method-name').innerText = metodePembayaran;
+        
+        let subtotal = 0;
+        cart.forEach(item => subtotal += item.harga * item.qty);
+        discountTotal = 0;
+        if (appliedVoucher && validVouchers[appliedVoucher]) {
+            const v = validVouchers[appliedVoucher];
+            if (v.type === 'percent') discountTotal = subtotal * (v.value / 100);
+            else discountTotal = v.value;
+        }
+        if (discountTotal > subtotal) discountTotal = subtotal;
+        
+        const totalAmount = subtotal - discountTotal;
+        document.getElementById('detail-subtotal-amount').innerText = formatRupiah(subtotal);
+        const discountRow = document.getElementById('detail-discount-row');
+        if (discountTotal > 0) {
+            discountRow.classList.remove('hidden');
+            document.getElementById('detail-discount-amount').innerText = '- ' + formatRupiah(discountTotal);
+        } else {
+            discountRow.classList.add('hidden');
+        }
+        document.getElementById('detail-total-amount').innerText = formatRupiah(totalAmount);
+        
+        const details = paymentDetails[metodePembayaran];
+        const accountContainer = document.getElementById('account-container');
+        const qrisContainer = document.getElementById('qris-container');
+        if (details.type === 'qris') {
+            accountContainer.classList.add('hidden');
+            qrisContainer.classList.remove('hidden');
+        } else {
+            accountContainer.classList.remove('hidden');
+            qrisContainer.classList.add('hidden');
+            document.getElementById('detail-account-number').innerText = details.no;
+            document.getElementById('detail-account-name').innerText = details.an;
+        }
+    }
+
+    function backToPaymentSelection() {
+        document.getElementById('payment-step-2').classList.add('hidden');
+        document.getElementById('payment-step-1').classList.remove('hidden');
+        document.getElementById('modal-title').innerText = 'Pilih Pembayaran';
+    }
+
+    function copyToClipboard(elementId) {
+        const textToCopy = document.getElementById(elementId).innerText;
+        const tempInput = document.createElement("input");
+        tempInput.value = textToCopy;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        alert('Nomor disalin!');
+    }
+
+    function confirmCheckoutWA() {
+        if (cart.length === 0) return;
+        let pesan = "Halo Admin FallZx Stores, saya sudah mentransfer pesanan:\n\n";
+        pesan += "🛒 *DETAIL PESANAN*\n──────────────────\n";
+        
+        let subtotal = 0;
+        cart.forEach((item, index) => {
+            const sub = item.harga * item.qty;
+            subtotal += sub;
+            pesan += `${index + 1}. *${item.nama}*\n   ${item.qty}x @ ${formatRupiah(item.harga)} = ${formatRupiah(sub)}\n`;
+        });
+        
+        let finalTotal = subtotal - discountTotal;
+        
+        if (discountTotal > 0) {
+            pesan += `\n🎁 *Diskon (${appliedVoucher}):* -${formatRupiah(discountTotal)}\n`;
+        }
+        
+        const hasPanel = cart.some(item => item.nama.toLowerCase().includes('panel'));
+        if (hasPanel) {
+            const reqUsername = document.getElementById('panel-username').value.trim();
+            pesan += `\n👤 *Username Panel:* ${reqUsername}\n`;
+        }
+        
+        pesan += "──────────────────\n";
+        pesan += `*Metode Pembayaran:* ${currentPaymentMethod}\n`;
+        pesan += `*Total Transfer:* ${formatRupiah(finalTotal)}\n\n`;
+        pesan += `Saya lampirkan bukti transfer. Mohon diproses! 🙏`;
+        
+        const encodedText = encodeURIComponent(pesan);
+        window.open(`https://wa.me/6285813708397?text=${encodedText}`, '_blank');
+        
+        closePaymentModal();
+        if(!document.getElementById('cart-sidebar').classList.contains('translate-x-full')) toggleCart();
+    }
+
+    // LAIN-LAIN (Tampilan Navbar & Smooth Scroll)
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    btn.addEventListener('click', () => { menu.classList.toggle('hidden'); });
+
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 10) {
+            navbar.classList.add('shadow-sm', 'bg-white/95');
+            navbar.classList.remove('bg-white/80');
+        } else {
+            navbar.classList.remove('shadow-sm', 'bg-white/95');
+            navbar.classList.add('bg-white/80');
+        }
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            menu.classList.add('hidden');
+            if (landingView.classList.contains('hidden')) showLandingPage();
+            setTimeout(() => {
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) window.scrollTo({ top: targetElement.offsetTop - 80, behavior: 'smooth' });
+            }, 100);
+        });
+    });
+
+    function sendToWhatsApp(e) {
+        e.preventDefault();
+        const name = document.getElementById('sender-name').value;
+        const message = document.getElementById('sender-message').value;
+        const text = `Halo Admin,\n\nNama: *${name}*\nPertanyaan:\n${message}`;
+        window.open(`https://wa.me/6285813708397?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    // CHATBOT UI
+    const chatToggleBtn = document.getElementById('chat-toggle-btn');
+    const closeChatBtn = document.getElementById('close-chat');
+    const chatWindow = document.getElementById('ai-chat-window');
+    chatToggleBtn.addEventListener('click', () => {
+        chatWindow.classList.toggle('hidden');
+        if (!chatWindow.classList.contains('hidden')) chatToggleBtn.innerHTML = '<i data-lucide="chevron-down" class="w-7 h-7"></i>';
+        else chatToggleBtn.innerHTML = '<i data-lucide="message-square" class="w-7 h-7"></i>';
+        lucide.createIcons();
+    });
+    closeChatBtn.addEventListener('click', () => {
+        chatWindow.classList.add('hidden');
+        chatToggleBtn.innerHTML = '<i data-lucide="message-square" class="w-7 h-7"></i>';
+        lucide.createIcons();
+    });
+
+    const chatInput = document.getElementById('chat-input');
+    const sendChatBtn = document.getElementById('send-chat');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Fungsi Pembantu untuk UI Chatbot
+    function addMessageToUI(sender, text, id = null) {
+        const msgEl = document.createElement('div');
+        if (id) msgEl.id = id;
+        
+        if (sender === 'user') {
+            msgEl.className = 'self-end bg-primary-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-none max-w-[85%] text-sm shadow-sm';
+        } else {
+            msgEl.className = 'self-start bg-white border border-gray-200 text-gray-800 px-4 py-2.5 rounded-2xl rounded-tl-none max-w-[85%] text-sm shadow-sm';
+            // Styling khusus untuk loading/error jika diperlukan bisa ditambah pengecekan
+            if (text === 'Mengetik...') {
+                msgEl.classList.add('text-gray-500', 'italic');
+            } else if (text.includes('Maaf') || text.includes('terputus')) {
+                msgEl.classList.add('bg-red-50', 'border-red-200', 'text-red-600');
+            } else {
+                // Untuk balasan normal, ubah newline jadi <br>
+                text = text.replace(/\n/g, '<br>');
+            }
+        }
+        
+        msgEl.innerHTML = text;
+        chatMessages.appendChild(msgEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        // 1. Munculkan pesan user di layar
+        addMessageToUI('user', message);
+        input.value = '';
+
+        // 2. Munculkan animasi mengetik
+        const typingId = 'typing-' + Date.now();
+        addMessageToUI('bot', 'Mengetik...', typingId);
+
+        // 3. API Key dan URL khusus untuk Model 3.5 Flash
+        const apiKey = "AQ.Ab8RN6JZ6tLOpA9pqA3dZqoTxG65toS-XI6NahYtbTt69jcUZg";
+        // Menggunakan endpoint standar generateContent agar format balasan mudah dibaca
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey // Format otentikasi baru untuk AQ keys
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        role: "user",
+                        parts: [{ 
+                            text: "Kamu adalah FallZx Bot, asisten Customer Service di FallZx Stores. Jawablah dengan ramah, gaul (pakai kata Bang/Kak), dan singkat. Pertanyaan pelanggan: " + message 
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+
+            // 4. Hapus tulisan "Mengetik..."
+            const typingElement = document.getElementById(typingId);
+            if (typingElement) typingElement.remove();
+
+            // 5. Cek apakah ada error dari Google
+            if (!response.ok) {
+                console.error("Detail Error Google:", data);
+                addMessageToUI('bot', 'Maaf sistem bot sedang gangguan (Error: ' + (data.error?.message || 'Server sibuk') + ').');
+                return;
+            }
+
+            // 6. Munculkan balasan bot
+            if (data.candidates && data.candidates.length > 0) {
+                const botReply = data.candidates[0].content.parts[0].text;
+                addMessageToUI('bot', botReply);
+            } else {
+                 addMessageToUI('bot', 'Maaf, bot tidak dapat memberikan jawaban saat ini.');
+            }
+
+        } catch (error) {
+            console.error("Koneksi Error:", error);
+            const typingElement = document.getElementById(typingId);
+            if (typingElement) typingElement.remove();
+            addMessageToUI('bot', 'Koneksi terputus, coba lagi nanti ya Bang.');
+        }
+    }
+
+    // Tombol Kirim & Enter
+    sendChatBtn.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendChatMessage();
+    });
+</script>
+</body>
+</html>
